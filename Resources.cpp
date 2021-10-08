@@ -21,7 +21,10 @@ Resources::~Resources()
 void Resources::setPath(const std::string& path)
 {
     this->path = path;
-    if(this->path.back() != '/') this->path.push_back('/');
+    if(this->path.back() != '/')
+    {
+        this->path.push_back('/');
+    }
 }
 
 std::string Resources::getPath() const

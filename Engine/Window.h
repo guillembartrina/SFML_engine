@@ -7,7 +7,7 @@
 
 #include "INonCopyable.h"
 #include "IScene.h"
-#include "SceneHandler.h"
+#include "SceneStack.h"
 
 #include "SFML/System/Clock.hpp"
 #include "SFML/System/Time.hpp"
@@ -27,13 +27,14 @@ class Window : private INonCopyable
 
     bool isFullscreen;
     sf::Vector2u size;
-    
+    float fullscreenXOffset;
+
     sf::RenderWindow window;
 
     IScene* scene;
 
     std::thread* thread;
-    
+
     sf::Clock clock;
 
     Window(const Builder& builder);

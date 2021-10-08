@@ -22,20 +22,18 @@ class IScene : private INonCopyable
     virtual void pause();
     virtual void resume();
 
-    bool changeRequest(IScene*& scene, bool& replace);
-    virtual bool closeRequest();
+    bool pollRequest(IScene*& scene, bool& replace);
 
-    protected: 
+    protected:
 
     void changeScene(IScene* scene, bool replace);
     void closeScene();
 
     private:
 
-    bool change;
+    bool request;
     IScene* scene;
     bool replace;
-    bool close;
 
 };
 

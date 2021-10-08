@@ -38,6 +38,7 @@ void Window::init()
         sf::View view(sf::FloatRect(0.f, 0.f, float(size.x), float(size.y)));
         view.setViewport(sf::FloatRect((1.f-ratiosRatio)/2.f, 0.f, ratiosRatio, 1.f));
         window.setView(view);
+        fullscreenXOffset = ((1.f-ratiosRatio)/2.f) * window.getSize().x;
     }
     scene->init();
     clock.restart();
@@ -46,19 +47,42 @@ void Window::init()
 
 void Window::loop()
 {
+    IScene* scene;
+    bool replace;
     while(window.isOpen())
     {
         handleEvents();
         update();
         draw();
-        if(scene->closeRequest()) window.close();
+        if(this->scene->pollRequest(scene, replace) and scene == nullptr)
+        {
+            window.close();
+        }
     }
 }
 
 void Window::handleEvents()
 {
     sf::Event event;
-    while (window.pollEvent(event)) scene->handleEvents(event);
+    while (window.pollEvent(event))
+    {
+        if(isFullscreen)
+        {
+            switch(event.type)
+            {
+                case sf::Event::MouseButtonPressed:
+                case sf::Event::MouseButtonReleased:
+                    event.mouseButton.x -= fullscreenXOffset;
+                    break;
+                case sf::Event::MouseMoved:
+                    event.mouseMove.x -= fullscreenXOffset;
+                    break;
+                default:
+                    break;
+            }
+        }
+        scene->handleEvents(event);
+    }
 }
 
 void Window::update()
@@ -113,7 +137,7 @@ Window::Builder& Window::Builder::setStyle(sf::Uint32 style)
 
 Window::Builder& Window::Builder::enableMultiscene()
 {
-    scene = new SceneHandler(scene);
+    scene = new SceneStack(scene);
     return *this;
 }
 

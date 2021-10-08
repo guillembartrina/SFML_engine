@@ -2,36 +2,28 @@
 
 IScene::IScene()
 {
-    change = false;
-    close = false;
+    request = false;
 }
 
 IScene::~IScene()
 {
-    if(change) delete scene;
+    if(request and scene)
+    {
+        delete scene;
+    }
 }
 
 void IScene::pause() {}
 
 void IScene::resume() {}
 
-bool IScene::changeRequest(IScene*& scene, bool& replace)
+bool IScene::pollRequest(IScene*& scene, bool& replace)
 {
-    if(change)
+    if(request)
     {
         scene = this->scene;
         replace = this->replace;
-        change = false;
-        return true;
-    }
-    return false;
-}
-
-bool IScene::closeRequest()
-{
-    if(close)
-    {
-        close = false;
+        request = false;
         return true;
     }
     return false;
@@ -39,13 +31,21 @@ bool IScene::closeRequest()
 
 void IScene::changeScene(IScene* scene, bool replace = true)
 {
-    if(change) delete scene;
+    if(request and this->scene)
+    {
+        delete this->scene;
+    }
     this->scene = scene;
     this->replace = replace;
-    change = true;
+    request = true;
 }
 
 void IScene::closeScene()
 {
-    close = true;
+    if(request and scene)
+    {
+        delete scene;
+    }
+    scene = nullptr;
+    request = true;
 }
